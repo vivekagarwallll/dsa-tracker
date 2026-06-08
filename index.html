@@ -178,7 +178,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    input[type="text"], select {
+    input[type="text"], input[type="date"], select {
       background: var(--surface2);
       border: 1px solid var(--border2);
       border-radius: 6px;
@@ -190,6 +190,8 @@
       transition: border-color 0.2s;
     }
     input[type="text"] { flex: 1; min-width: 200px; }
+    input[type="date"] { color-scheme: dark; cursor: pointer; }
+    input[type="date"]:focus { border-color: var(--green); }
     input[type="text"]::placeholder { color: var(--muted); }
     input[type="text"]:focus, select:focus { border-color: var(--green); }
     select { cursor: pointer; }
@@ -523,6 +525,7 @@
     <div class="add-title">+ Add solved problem</div>
     <div class="add-row">
       <input type="text" id="p-name" placeholder="Problem name (e.g. Two Sum)" />
+      <input type="date" id="p-date" />
       <select id="p-topic">
         <option>Arrays &amp; Hashing</option>
         <option>Two Pointers</option>
@@ -619,6 +622,7 @@
     if (!name) { showToast('Enter a problem name first'); return; }
     const topic = document.getElementById('p-topic').value;
     const today = todayStr();
+    const solvedOn = document.getElementById('p-date').value || today;
     const data = load();
 
     if (data.problems.find(p => p.name.toLowerCase() === name.toLowerCase())) {
@@ -630,8 +634,8 @@
       name,
       topic,
       difficulty: selectedDiff,
-      solvedOn: today,
-      revisions: [addDays(today,3), addDays(today,7), addDays(today,14)],
+      solvedOn: solvedOn,
+      revisions: [addDays(solvedOn,3), addDays(solvedOn,7), addDays(solvedOn,14)],
       revisionsDone: 0
     };
 
@@ -787,6 +791,10 @@
     activeFilter = topic;
     render();
   }
+
+  // Set default date to today
+  const dateEl = document.getElementById('p-date');
+  if (!dateEl.value) dateEl.value = todayStr();
 
   // Enter key to add
   document.getElementById('p-name').addEventListener('keydown', e => {
